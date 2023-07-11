@@ -14,6 +14,8 @@
 #define NOTE_PIN 14
 #define VELOCITY_PIN 27
 
+const char* VERSION = "0.0.3";
+
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
 
 const unsigned char logo [] PROGMEM = {
@@ -116,7 +118,7 @@ uint64_t lastScreenUpdateTime = 0;
 // TODO: adjustable parameters:
 uint8_t currentKeyIndex = 9;
 uint8_t currentOctave = 4;
-uint8_t numberOfNotes = 8;
+uint8_t numberOfNotes = 4;
 uint8_t currentScaleIndex = 0;
 uint8_t currentMidiChannel = 0;
 
@@ -128,14 +130,15 @@ void displayLogo()
   display.clearDisplay();
   display.drawBitmap(0, 0, logo, SCREEN_WIDTH, SCREEN_HEIGHT, SSD1306_WHITE);
   display.display();
-  delay(1000);
+  delay(500);
   display.setTextSize(1);
   display.setTextColor(SSD1306_BLACK);
   display.setCursor(3, 3);
   display.println("ThereMIDIn");
-  display.println("firmware v0.0.2");
+  display.print("firmware ");
+  display.println(VERSION);
   display.display();
-  delay(1000);
+  delay(2000);
 }
 
 
@@ -180,10 +183,14 @@ void updateDisplay()
   display.setTextColor(SSD1306_WHITE);
 
   display.setCursor(0, 3);
+
+  display.print("note: ");
   display.println(midiNoteNumberToName[currentNoteNumber]);
 
-  display.print(keyNames[currentKeyIndex]);
-  display.print(" ");
+  display.print("key: ");
+  display.println(keyNames[currentKeyIndex]);
+
+  display.print("scale: ");
   display.println(scaleNames[currentScaleIndex]);
 
   display.print("octave: ");
@@ -222,7 +229,7 @@ void loop()
   updateDisplay();
 
   MIDImessage(noteOnCommand, currentNoteNumber, currentVelocity);
-  delay(100);
+  delay(50);
   MIDImessage(noteOffCommand, currentNoteNumber, 0);
-  delay(100);
+  delay(50);
 }
